@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Gift Cards | The Golf Doctor DC</title>
+  <meta name="description" content="Washington, D.C.'s most advanced golf fitting center. TrackMan 4, on-site club making, and custom fittings by Matt Grabowy."/>
+  <link rel="icon" href="favicon.svg"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/site.css"/>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="index.html" aria-label="The Golf Doctor DC home">
+        <svg viewBox="0 0 40 40" class="logo-mark" aria-hidden="true">
+  <rect width="40" height="40" rx="8" fill="#F4F0E6"/>
+  <path fill="#0E1A14" d="M20 6.2 L31.4 11.2 V21.2 C31.4 28.2 20 34.5 20 34.5 C20 34.5 8.6 28.2 8.6 21.2 V11.2 Z"/>
+  <rect x="18.4" y="13.2" width="3.2" height="14.4" rx="0.7" fill="#F4F0E6"/>
+  <path fill="#C45C12" d="M21.6 13.2 L30.4 17.4 L21.6 21.6 Z"/>
+</svg>
+        <span><span class="logo-name">The Golf Doctor</span><span class="logo-sub">Washington, D.C.</span></span>
+      </a>
+      <nav class="nav-desk" aria-label="Primary"><a href="fitting.html" class="">Club Fitting</a><a href="club-making.html" class="">Club Making</a><a href="gift-cards.html" class="active">Gift Cards</a><a href="trade-in.html" class="">Trade In</a><a href="about.html" class="">About</a><a href="partners.html" class="">Partners</a><a href="studio.html" class="">Studio</a><a href="location.html" class="">Location</a></nav>
+      <div class="header-actions">
+        <a class="phone-desk" href="tel:+12028274202">(202) 827-4202</a>
+        <a class="btn btn-primary" href="https://booksy.com/en-us/698043_the-golf-doctor-dc_other_15534_washington" target="_blank" rel="noreferrer">Book Now</a>
+        <button class="menu-btn" id="open-menu" aria-label="Open menu">☰</button>
+      </div>
+    </div>
+  </header>
+  <div class="backdrop" id="backdrop"></div>
+  <aside class="drawer" id="drawer" aria-label="Menu">
+    <div class="drawer-head">
+      <strong>Menu</strong>
+      <button class="menu-btn" id="close-menu" aria-label="Close menu">✕</button>
+    </div>
+    <nav><a href="index.html">Home</a><a href="fitting.html">Club Fitting</a><a href="club-making.html">Club Making</a><a href="gift-cards.html">Gift Cards</a><a href="trade-in.html">Trade In</a><a href="about.html">About</a><a href="partners.html">Partners</a><a href="studio.html">Studio</a><a href="location.html">Location</a><a href="book.html">Book a Fitting</a></nav>
+    <div class="drawer-foot">
+      <a class="btn btn-primary" href="https://booksy.com/en-us/698043_the-golf-doctor-dc_other_15534_washington" target="_blank" rel="noreferrer" style="width:100%">Book Now</a>
+      <p style="text-align:center;margin:0.9rem 0 0"><a href="tel:+12028274202">(202) 827-4202</a></p>
+    </div>
+  </aside>
+  <main id="main">
+    <section class="hero compact">
+    <img src="images/gift-card.jpg" alt="Golf Doctor DC gift card"/>
+    <div class="hero-shade"></div>
+    <div class="wrap">
+      <p class="eyebrow">Gift Cards</p>
+      <h1>The gift that actually fits.</h1>
+      <p class="lede">Fittings, simulator time, club making, and shop work — a Golf Doctor DC gift card covers all of it.</p>
+      
+      
+    </div>
+  </section>
+    <section class="section"><div class="wrap grid-2" style="align-items:start">
+      <div>
+        <p class="eyebrow">Online gift card</p>
+        <h2 style="margin-top:0.6rem">Buy an online gift card</h2>
+        <p class="muted">Choose an amount and pay with PayPal on this page. We’ll email the card so the recipient can use it in the studio for any fitting or shop service.</p>
+        <ul class="muted" style="margin-top:1.5rem">
+          <li>Introductory fitting — $150</li>
+          <li>Driver or long game — $150</li>
+          <li>Iron fitting — $175</li>
+          <li>Full bag fitting — $400</li>
+        </ul>
+      </div>
+      <form class="card" id="gift-paypal" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+        <input type="hidden" name="cmd" value="_xclick"/>
+        <input type="hidden" name="business" value="matt@golfdoctordc.com"/>
+        <input type="hidden" name="currency_code" value="USD"/>
+        <input type="hidden" name="no_shipping" value="1"/>
+        <input type="hidden" name="no_note" value="0"/>
+        <input type="hidden" name="tax" value="0"/>
+        <input type="hidden" name="lc" value="US"/>
+        <input type="hidden" name="charset" value="utf-8"/>
+        <input type="hidden" name="item_name" value="Golf Doctor DC Gift Card"/>
+        <input type="hidden" name="item_number" value="GIFT-CARD"/>
+        <input type="hidden" name="amount" id="pp-amount" value="150.00"/>
+        <input type="hidden" name="on0" value="Details"/>
+        <input type="hidden" name="os0" id="pp-note" value="Studio gift card"/>
+        <h3>Payment for Gift Card</h3>
+        <p class="muted">Pay with PayPal. We’ll email the card after the payment clears.</p>
+        <p class="muted" style="margin-top:1rem"><strong>Select amount</strong></p>
+        <div class="amounts" style="margin-top:0.6rem">
+          <button type="button" data-amount="50">$50</button>
+          <button type="button" data-amount="100">$100</button>
+          <button type="button" data-amount="150" class="on">$150</button>
+          <button type="button" data-amount="175">$175</button>
+          <button type="button" data-amount="250">$250</button>
+          <button type="button" data-amount="400">$400</button>
+          <button type="button" data-amount="custom">Custom</button>
+        </div>
+        <label id="custom-wrap" class="hidden" style="margin-top:0.8rem">Custom amount<input id="custom-amount" inputmode="decimal" placeholder="25.00"/></label>
+        <label>Your name<input id="from-name" placeholder="Who is this from?"/></label>
+        <label>Recipient<input id="recipient-name" placeholder="Who is this for?"/></label>
+        <label>Recipient email<input id="recipient-email" type="email" placeholder="Where should we send the card?"/></label>
+        <label>Message<textarea id="gift-note" placeholder="A short note to include with the card"></textarea></label>
+        <p style="margin:1rem 0 0.6rem;font-family:var(--display);font-size:2rem" id="pp-total">$150.00</p>
+        <button class="btn" type="submit" style="width:100%;background:#FFC439;color:#003087;border:0;font-weight:700">Pay with PayPal</button>
+        <p class="muted" style="text-align:center;margin-top:0.7rem;font-size:0.8rem">Checkout opens on PayPal. Payment goes to matt@golfdoctordc.com.</p>
+      </form>
+    </div></section>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="logo" href="index.html"><svg viewBox="0 0 40 40" class="logo-mark" aria-hidden="true">
+  <rect width="40" height="40" rx="8" fill="#F4F0E6"/>
+  <path fill="#0E1A14" d="M20 6.2 L31.4 11.2 V21.2 C31.4 28.2 20 34.5 20 34.5 C20 34.5 8.6 28.2 8.6 21.2 V11.2 Z"/>
+  <rect x="18.4" y="13.2" width="3.2" height="14.4" rx="0.7" fill="#F4F0E6"/>
+  <path fill="#C45C12" d="M21.6 13.2 L30.4 17.4 L21.6 21.6 Z"/>
+</svg><span><span class="logo-name">The Golf Doctor</span><span class="logo-sub">Washington, D.C.</span></span></a>
+        <p style="max-width:28rem;margin-top:1rem;line-height:1.6">Custom club fitting and on-site club making in downtown Washington, D.C. TrackMan 4. Thousands of test combinations. Built here, not shipped to a factory floor.</p>
+        <p style="font-family:var(--display);font-style:italic;font-size:1.25rem;margin-top:1rem">better golf…by design</p>
+      </div>
+      <div>
+        <p class="foot-title">Visit</p>
+        <ul>
+          <li><a href="https://maps.google.com/?q=1108+K+St+NW+Floor+3+Washington+DC+20005" target="_blank" rel="noreferrer">1108 K St NW, Floor 3<br/>Washington, DC 20005</a></li>
+          <li><a href="tel:+12028274202">(202) 827-4202</a></li>
+          <li><a href="mailto:matt@golfdoctordc.com?subject=Help%20me%20break%20Par!">matt@golfdoctordc.com</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-title">Explore</p>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="fitting.html">Club Fitting</a></li><li><a href="club-making.html">Club Making</a></li><li><a href="gift-cards.html">Gift Cards</a></li><li><a href="trade-in.html">Trade In</a></li><li><a href="about.html">About</a></li><li><a href="partners.html">Partners</a></li><li><a href="studio.html">Studio</a></li><li><a href="location.html">Location</a></li>
+          <li><a href="book.html">Book a Fitting</a></li>
+          <li><a href="https://www.yelp.com/biz/the-golf-doctor-dc-washington" target="_blank" rel="noreferrer">Reviews on Yelp</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap legal">
+      <p>© 2026 The Golf Doctor-DC, LLC</p>
+      <p>All fittings by appointment. Walk-ins, please call first.</p>
+    </div>
+  </footer>
+  <script src="js/site.js"></script>
+</body>
+</html>
