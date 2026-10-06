@@ -18,7 +18,7 @@ function GiftCardThanksPage() {
         image="/images/gift-card.jpg"
         eyebrow="Payment received"
         title="Your gift card is on the way."
-        subtitle="Stripe confirmed the payment. Email the order details to the studio so the redemption code can go out."
+        subtitle="Stripe confirmed the payment. The studio is emailed the amount, names, recipient email, message, and time."
         compact
       />
       <Section>
@@ -28,9 +28,9 @@ function GiftCardThanksPage() {
         </h2>
         <ol className="mt-6 max-w-2xl space-y-4 text-muted">
           <li>
-            <span className="font-medium text-ink">1. Email the order.</span>{" "}
-            The link below opens a note to {SITE.email} with the amount, names,
-            recipient email, and message captured on the gift-card form.
+            <span className="font-medium text-ink">1. The studio gets the order.</span>{" "}
+            Amount, from name, recipient, recipient email, message, and time go
+            to {SITE.email} automatically.
           </li>
           <li>
             <span className="font-medium text-ink">2. Check your email.</span>{" "}
