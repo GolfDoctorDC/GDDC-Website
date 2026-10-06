@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { GIFT_AMOUNTS, SITE } from "@/lib/site";
+import { SITE } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,10 @@ const STRIPE_GIFT_CARDS: Record<number, string> = {
 
 const STRIPE_CUSTOM =
   "https://buy.stripe.com/5kQ5kD38N4bEfCi86w6Vq08";
+
+const AMOUNTS = Object.keys(STRIPE_GIFT_CARDS)
+  .map(Number)
+  .sort((a, b) => a - b);
 
 const MIN_CUSTOM = 25;
 const MAX_CUSTOM = 10000;
@@ -98,7 +102,7 @@ export function GiftCardPay() {
         <fieldset className="mt-6">
           <legend className="text-sm font-medium">Select amount</legend>
           <div className="mt-3 grid grid-cols-3 gap-2">
-            {GIFT_AMOUNTS.filter((n) => n in STRIPE_GIFT_CARDS).map((n) => (
+            {AMOUNTS.map((n) => (
               <button
                 key={n}
                 type="button"
