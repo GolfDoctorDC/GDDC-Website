@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/page-hero";
 import { Eyebrow, Section } from "@/components/site/section";
+import { GiftOrderEmail } from "@/components/site/gift-order-email";
 import { SITE } from "@/lib/site";
 
 export const Route = createFileRoute("/gift-card-thanks")({
@@ -17,7 +18,7 @@ function GiftCardThanksPage() {
         image="/images/gift-card.jpg"
         eyebrow="Payment received"
         title="Your gift card is on the way."
-        subtitle="Stripe confirmed the payment. The studio will email the redemption code to the address you used at checkout."
+        subtitle="Stripe confirmed the payment. Email the order details to the studio so the redemption code can go out."
         compact
       />
       <Section>
@@ -27,20 +28,26 @@ function GiftCardThanksPage() {
         </h2>
         <ol className="mt-6 max-w-2xl space-y-4 text-muted">
           <li>
-            <span className="font-medium text-ink">1. Check your email.</span>{" "}
+            <span className="font-medium text-ink">1. Email the order.</span>{" "}
+            The link below opens a note to {SITE.email} with the amount, names,
+            recipient email, and message captured on the gift-card form.
+          </li>
+          <li>
+            <span className="font-medium text-ink">2. Check your email.</span>{" "}
             The receipt comes from Stripe. The gift-card code comes from the
             studio, at {SITE.email}.
           </li>
           <li>
-            <span className="font-medium text-ink">2. Keep the code.</span>{" "}
+            <span className="font-medium text-ink">3. Keep the code.</span>{" "}
             It covers fittings, simulator time, and shop work. It does not
             expire at checkout.
           </li>
           <li>
-            <span className="font-medium text-ink">3. Redeem it at the studio.</span>{" "}
+            <span className="font-medium text-ink">4. Redeem it at the studio.</span>{" "}
             Bring the code to {SITE.address.line1}, {SITE.address.line2}.
           </li>
         </ol>
+        <GiftOrderEmail />
         <div className="mt-10 flex flex-wrap gap-3">
           <a
             href={SITE.booksy}
