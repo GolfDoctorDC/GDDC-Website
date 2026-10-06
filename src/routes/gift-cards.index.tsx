@@ -17,7 +17,7 @@ function GiftCardsPage() {
         image="/images/gift-card.jpg"
         eyebrow="Gift Cards"
         title="The gift that actually fits."
-        subtitle="A digital Golf Doctor DC gift card. Pay with PayPal and the card is issued automatically — fittings, simulator time, and shop work."
+        subtitle="A digital Golf Doctor DC gift card. Pay with card, Apple Pay, or Google Pay — fittings, simulator time, and shop work."
         compact
       />
       <Section>
@@ -26,9 +26,9 @@ function GiftCardsPage() {
           Buy a digital gift card
         </h2>
         <p className="mt-4 max-w-2xl text-muted">
-          Choose an amount, add a note, and pay on this page. When PayPal
-          confirms the payment, the card is issued with a redemption code. No
-          waiting on the studio to email one.
+          Choose an amount and continue to Stripe. Each button is a Golf Doctor
+          gift-card product. After payment, the studio emails the redemption
+          code.
         </p>
         <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
           <li>Introductory fitting — $150</li>
