@@ -5,12 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DigitalGiftCard } from "@/components/site/digital-gift-card";
-import { GiftOrderEmail } from "@/components/site/gift-order-email";
-import {
-  giftOrderMailto,
-  saveGiftOrder,
-  type GiftOrderDraft,
-} from "@/lib/gift-order-mail";
+import { createGiftCardOrder } from "@/lib/gift-cards.functions";
+import { saveGiftOrder, type GiftOrderDraft } from "@/lib/gift-order-mail";
 
 const STRIPE_GIFT_CARDS: Record<number, string> = {
   50: "https://buy.stripe.com/aFa9AT24JcIadua1I86Vq06",
@@ -45,6 +41,7 @@ function draftFrom(
   recipient: string,
   recipientEmail: string,
   message: string,
+  orderId: string,
 ): GiftOrderDraft {
   return {
     amount: `$${dollars.toFixed(2)}`,
@@ -53,6 +50,7 @@ function draftFrom(
     recipientEmail: recipientEmail.trim(),
     message: message.trim(),
     orderedAt: new Date().toISOString(),
+    orderId,
   };
 }
 
@@ -64,7 +62,7 @@ export function GiftCardPay() {
   const [recipientEmail, setRecipientEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [ready, setReady] = useState<GiftOrderDraft | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const dollars = useMemo(() => {
     if (amount === "custom") return parseCustom(custom);
@@ -76,15 +74,9 @@ export function GiftCardPay() {
       ? dollars !== null && dollars >= MIN_CUSTOM && dollars <= MAX_CUSTOM
       : amount in STRIPE_GIFT_CARDS;
 
-  function currentDraft() {
-    if (!valid || dollars === null) return null;
-    return draftFrom(dollars, fromName, recipient, recipientEmail, message);
-  }
-
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const draft = currentDraft();
-    if (!draft || dollars === null) {
+    if (!valid || dollars === null) {
       setError(
         amount === "custom"
           ? `Enter an amount between $${MIN_CUSTOM} and $${MAX_CUSTOM.toLocaleString()}.`
@@ -92,8 +84,31 @@ export function GiftCardPay() {
       );
       return;
     }
+    setSubmitting(true);
+    let orderId = "";
+    try {
+      const created = await createGiftCardOrder({
+        data: {
+          amount: dollars,
+          fromName,
+          recipientName: recipient,
+          recipientEmail,
+          message,
+        },
+      });
+      orderId = created.id;
+    } catch {
+      orderId = `gc_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
+    }
+    const draft = draftFrom(
+      dollars,
+      fromName,
+      recipient,
+      recipientEmail,
+      message,
+      orderId,
+    );
     saveGiftOrder(draft);
-    setReady(draft);
     const base =
       amount === "custom" ? STRIPE_CUSTOM : STRIPE_GIFT_CARDS[amount];
     const url = new URL(base);
@@ -101,17 +116,16 @@ export function GiftCardPay() {
       url.searchParams.set("prefilled_email", recipientEmail.trim());
     }
     const note = [
+      `Order: ${orderId}`,
       fromName.trim() && `From: ${fromName.trim()}`,
       recipient.trim() && `For: ${recipient.trim()}`,
       message.trim() && `Note: ${message.trim()}`,
     ]
       .filter(Boolean)
       .join(" | ");
-    if (note) url.searchParams.set("client_reference_id", note.slice(0, 200));
+    url.searchParams.set("client_reference_id", note.slice(0, 200));
     window.location.assign(url.toString());
   }
-
-  const preview = ready ?? currentDraft();
 
   return (
     <div className="grid items-start gap-10 lg:grid-cols-2">
@@ -129,8 +143,8 @@ export function GiftCardPay() {
           Payment for Gift Card
         </h3>
         <p className="mt-1 text-sm text-muted">
-          Pay with card, Apple Pay, or Google Pay on Stripe. The studio emails
-          the redemption code after the payment clears.
+          Pay with card, Apple Pay, or Google Pay on Stripe. The studio is
+          emailed the order when the payment clears.
         </p>
 
         <fieldset className="mt-6">
@@ -259,32 +273,19 @@ export function GiftCardPay() {
         <button
           type="submit"
           className="mt-5 flex h-12 w-full items-center justify-center rounded-md bg-clay text-sm font-medium text-clay-fg transition-colors hover:bg-clay-deep disabled:opacity-50"
-          disabled={!valid}
+          disabled={!valid || submitting}
         >
-          {valid && dollars !== null
-            ? `Pay $${dollars.toFixed(2)} with Stripe`
-            : "Pay with Stripe"}
+          {submitting
+            ? "Opening Stripe…"
+            : valid && dollars !== null
+              ? `Pay $${dollars.toFixed(2)} with Stripe`
+              : "Pay with Stripe"}
         </button>
-        {preview ? (
-          <a
-            href={giftOrderMailto(preview)}
-            className="mt-3 flex h-11 w-full items-center justify-center rounded-md border border-border text-sm font-medium"
-            onClick={() => saveGiftOrder(preview)}
-          >
-            Email this order to the studio
-          </a>
-        ) : null}
         <p className="mt-3 text-center text-xs text-muted">
           Checkout opens on Stripe for {SITE.shortName}. Apple Pay and Google
-          Pay appear when the device supports them. The email link sends the
-          gift-card note to matt@golfdoctordc.com. Questions? Call {SITE.phone}.
+          Pay appear when the device supports them. Questions? Call {SITE.phone}.
         </p>
       </form>
-      {ready ? (
-        <div className="lg:col-span-2">
-          <GiftOrderEmail draft={ready} />
-        </div>
-      ) : null}
     </div>
   );
 }
