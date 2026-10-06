@@ -60,15 +60,18 @@ async function paidGiftOrder(raw: string, header: string): Promise<PaidOrder | n
     recipientEmail: note.recipientEmail || details?.email || "",
     message: note.message,
     orderedAt: created ? new Date(created * 1000).toISOString() : "",
-    orderId: String(session.id || event.id || ""),
+    orderId: note.orderId || String(session.id || event.id || ""),
   };
 }
 
 function parseNote(reference: string) {
-  const fromName = match(reference, "From");
-  const recipientName = match(reference, "For");
-  const message = match(reference, "Note");
-  return { fromName, recipientName, recipientEmail: "", message };
+  return {
+    orderId: match(reference, "Order"),
+    fromName: match(reference, "From"),
+    recipientName: match(reference, "For"),
+    recipientEmail: "",
+    message: match(reference, "Note"),
+  };
 }
 
 function match(reference: string, label: string) {
