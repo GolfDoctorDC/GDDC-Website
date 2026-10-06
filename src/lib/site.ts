@@ -5,9 +5,9 @@ export const SITE = {
   headline: "Washington, D.C.'s Most Advanced Golf Fitting Center",
   phone: "(202) 827-4202",
   phoneHref: "tel:+12028274202",
-  email: "matt@golfdoctordc.com",
+  email: "Matt@golfdoctordc.com",
   emailHref:
-    "mailto:matt@golfdoctordc.com?subject=Help%20me%20break%20Par!",
+    "mailto:Matt@golfdoctordc.com?subject=Help%20me%20break%20Par!",
   paypalEmail: "matt@golfdoctordc.com",
   booksy:
     "https://booksy.com/en-us/698043_the-golf-doctor-dc_other_15534_washington",

@@ -67,7 +67,7 @@ function Home() {
             <Button asChild size="lg" variant="inverse">
               <a href={SITE.emailHref}>
                 <Mail />
-                Matt@Golfdoctordc.com
+                {SITE.email}
               </a>
             </Button>
           </div>
