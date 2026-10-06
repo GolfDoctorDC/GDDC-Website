@@ -8,13 +8,14 @@ export type GiftOrderDraft = {
   recipientEmail: string;
   message: string;
   orderedAt: string;
+  orderId?: string;
 };
 
 export function saveGiftOrder(order: GiftOrderDraft) {
   try {
     sessionStorage.setItem(GIFT_ORDER_KEY, JSON.stringify(order));
   } catch {
-    /* Private browsing can block storage; the mailto still works from the form. */
+    /* Private browsing can block storage. The Stripe note still has the order. */
   }
 }
 
@@ -31,32 +32,17 @@ export function loadGiftOrder(): GiftOrderDraft | null {
       recipientEmail: parsed.recipientEmail ?? "",
       message: parsed.message ?? "",
       orderedAt: parsed.orderedAt ?? "",
+      orderId: parsed.orderId,
     };
   } catch {
     return null;
   }
 }
 
-function line(label: string, value: string) {
-  return `${label}: ${value.trim() || "(not given)"}`;
-}
-
-export function giftOrderMailto(order: GiftOrderDraft | null) {
-  const amount = order?.amount?.trim() || "";
-  const body = [
-    "Golf Doctor DC gift card order",
-    "",
-    line("Amount", amount),
-    line("From", order?.fromName ?? ""),
-    line("Recipient", order?.recipientName ?? ""),
-    line("Recipient email", order?.recipientEmail ?? ""),
-    line("Message", order?.message ?? ""),
-    line("Ordered at", order?.orderedAt ?? ""),
-    "",
-    "Stripe has the payment. This email is the gift-card note from the website.",
-  ].join("\n");
-  const subject = amount
-    ? `Gift card order ${amount}`
-    : "Gift card order";
-  return `mailto:${STUDIO_GIFT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+export function clearGiftOrder() {
+  try {
+    sessionStorage.removeItem(GIFT_ORDER_KEY);
+  } catch {
+    /* Ignore storage failures. */
+  }
 }
