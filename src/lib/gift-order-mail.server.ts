@@ -1,5 +1,4 @@
 import { getSql } from "@/lib/db";
-import { STUDIO_GIFT_EMAIL } from "@/lib/gift-notice";
 
 export type GiftOrderMail = {
   amount: string;
@@ -99,7 +98,7 @@ export async function emailGiftOrder(input: GiftOrderMail) {
     },
     body: JSON.stringify({
       from,
-      to: [TO, STUDIO_GIFT_EMAIL],
+      to: [TO],
       subject,
       text: body,
     }),
