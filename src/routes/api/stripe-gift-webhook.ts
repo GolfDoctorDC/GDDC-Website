@@ -9,10 +9,10 @@ export const Route = createFileRoute("/api/stripe-gift-webhook")({
         try {
           const paid = await paidGiftOrder(raw, signature);
           if (paid) {
-            const { emailGiftOrder } = await import(
+            const { issueAndDeliver } = await import(
               "@/lib/gift-order-mail.server"
             );
-            await emailGiftOrder(paid);
+            await issueAndDeliver(paid);
           }
           return new Response("ok");
         } catch {
@@ -31,6 +31,8 @@ type PaidOrder = {
   message: string;
   orderedAt: string;
   orderId: string;
+  buyerEmail: string;
+  stripeId: string;
 };
 
 async function paidGiftOrder(raw: string, header: string): Promise<PaidOrder | null> {
@@ -51,32 +53,38 @@ async function paidGiftOrder(raw: string, header: string): Promise<PaidOrder | n
   const dollars = Number.isFinite(amount) ? `$${(amount / 100).toFixed(2)}` : "";
   const reference = String(session.client_reference_id || "");
   const note = parseNote(reference);
-  const details = session.customer_details as { email?: string } | null;
+  const details = session.customer_details as { email?: string; name?: string } | null;
   const created = Number(session.created || event.created || 0);
   return {
     amount: dollars,
     fromName: note.fromName,
     recipientName: note.recipientName,
-    recipientEmail: note.recipientEmail || details?.email || "",
+    recipientEmail: note.recipientEmail,
+    buyerEmail: details?.email || "",
     message: note.message,
     orderedAt: created ? new Date(created * 1000).toISOString() : "",
-    orderId: note.orderId || String(session.id || event.id || ""),
+    orderId: note.orderId,
+    stripeId: String(session.id || event.id || ""),
   };
 }
 
 function parseNote(reference: string) {
   return {
-    orderId: match(reference, "Order"),
-    fromName: match(reference, "From"),
-    recipientName: match(reference, "For"),
+    orderId: field(reference, "Order"),
+    fromName: field(reference, "From"),
+    recipientName: field(reference, "For"),
     recipientEmail: "",
-    message: match(reference, "Note"),
+    message: field(reference, "Note"),
   };
 }
 
-function match(reference: string, label: string) {
-  const found = reference.match(new RegExp(`${label}:\\s*([^|]+)`));
-  return found?.[1]?.trim() || "";
+function field(reference: string, label: string) {
+  const prefix = `${label.toLowerCase()}:`;
+  const part = reference
+    .split("|")
+    .map((item) => item.trim())
+    .find((item) => item.toLowerCase().startsWith(prefix));
+  return part ? part.slice(prefix.length).trim() : "";
 }
 
 async function signed(raw: string, header: string, secret: string) {
