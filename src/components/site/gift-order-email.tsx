@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react";
+import { DigitalGiftCard } from "@/components/site/digital-gift-card";
 import { emailGiftPurchase } from "@/lib/gift-order-email.functions";
 import { clearGiftOrder, loadGiftOrder } from "@/lib/gift-order-mail";
 
 const SENT_KEY = "gddc-gift-order-sent";
 
+type Issued = {
+  code: string;
+  link: string;
+  amount: string;
+  fromName: string;
+  recipientName: string;
+  message: string;
+};
+
 export function GiftOrderEmail() {
   const [status, setStatus] = useState("Issuing the gift card…");
+  const [card, setCard] = useState<Issued | null>(null);
 
   useEffect(() => {
     const order = loadGiftOrder();
@@ -15,27 +26,38 @@ export function GiftOrderEmail() {
       );
       return;
     }
-    const sentId = sessionStorage.getItem(SENT_KEY);
-    if (order.orderId && sentId === order.orderId) {
-      setStatus("This gift card was already issued and emailed.");
-      return;
-    }
     let cancelled = false;
     emailGiftPurchase({ data: order })
       .then((result) => {
         if (order.orderId) sessionStorage.setItem(SENT_KEY, order.orderId);
         clearGiftOrder();
         if (cancelled) return;
-        setStatus(
-          result.status === "duplicate"
-            ? "This gift card was already issued and emailed."
-            : "The e-card was emailed to the recipient, or to you if no recipient email was given. A copy is on the studio desk.",
-        );
+        if (result.code && result.link) {
+          setCard({
+            code: result.code,
+            link: result.link,
+            amount: result.amount || order.amount,
+            fromName: result.fromName || order.fromName,
+            recipientName: result.recipientName || order.recipientName,
+            message: result.message || order.message,
+          });
+        }
+        if (result.emailed) {
+          setStatus("The e-card was emailed to the recipient. A copy is on the studio desk.");
+        } else if (result.status === "duplicate") {
+          setStatus("This gift card was already issued.");
+        } else {
+          setStatus(
+            `The card is issued, but the email did not send. ${result.emailError || "The live site has no mail key."}`,
+          );
+        }
       })
-      .catch(() => {
+      .catch((err) => {
         if (!cancelled) {
           setStatus(
-            "The payment went through. The e-card email did not send from this page; Stripe will retry it when the webhook confirms the payment.",
+            err instanceof Error
+              ? err.message
+              : "The payment went through, but the card could not be issued from this page.",
           );
         }
       });
@@ -44,5 +66,25 @@ export function GiftOrderEmail() {
     };
   }, []);
 
-  return <p className="mt-6 max-w-2xl text-muted">{status}</p>;
+  const dollars = card ? Number(card.amount.replace(/[^0-9.]/g, "")) : null;
+
+  return (
+    <div className="mt-8 max-w-xl">
+      <p className="text-muted">{status}</p>
+      {card ? (
+        <div className="mt-6">
+          <DigitalGiftCard
+            amount={Number.isFinite(dollars) ? dollars : null}
+            fromName={card.fromName}
+            recipientName={card.recipientName}
+            message={card.message}
+            code={card.code}
+          />
+          <a href={card.link} className="mt-4 inline-flex text-sm font-medium text-clay">
+            Open the e-card
+          </a>
+        </div>
+      ) : null}
+    </div>
+  );
 }
