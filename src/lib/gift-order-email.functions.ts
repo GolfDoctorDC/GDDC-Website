@@ -24,9 +24,11 @@ export const emailGiftPurchase = createServerFn({ method: "POST" })
       message: clean(raw.message, 280),
       orderedAt: clean(raw.orderedAt, 40),
       orderId: clean(raw.orderId, 80) || undefined,
+      buyerEmail: clean(raw.buyerEmail, 120) || undefined,
+      stripeId: clean(raw.stripeId, 80) || undefined,
     };
   })
   .handler(async ({ data }) => {
-    const { emailGiftOrder } = await import("@/lib/gift-order-mail.server");
-    return emailGiftOrder(data);
+    const { issueAndDeliver } = await import("@/lib/gift-order-mail.server");
+    return issueAndDeliver(data);
   });
