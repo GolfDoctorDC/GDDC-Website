@@ -47,7 +47,11 @@ export const Route = createFileRoute("/gift-cards_/{$code}.png")({
           });
         } catch (err) {
           console.error("[gift-card-png]", err);
-          return new Response("Could not render gift card", { status: 500 });
+          const detail =
+            err instanceof Error ? err.message : "Could not render gift card";
+          return new Response(`Could not render gift card: ${detail}`, {
+            status: 500,
+          });
         }
       },
     },

@@ -175,6 +175,11 @@ export default defineConfig(({ command, isPreview }) => ({
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.
             serverDir: "./server",
+            // Bundle satori into the serverless function (createRequire alone
+            // does not get traced into .vercel node_modules).
+            externals: {
+              inline: ["satori", "@resvg/resvg-wasm"],
+            },
           }),
         ]
       : []),

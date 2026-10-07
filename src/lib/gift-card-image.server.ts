@@ -1,12 +1,51 @@
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { Resvg } from "@resvg/resvg-js";
+import { initWasm, Resvg } from "@resvg/resvg-wasm";
 import { SITE } from "@/lib/site";
 
-// Satori's ESM build expects __dirname (harfbuzz); load the CJS build instead.
+// Prefer CJS satori (harfbuzz needs __dirname). Fall back to ESM if require fails
+// after the bundler inlines the package.
 const require = createRequire(import.meta.url);
-const satoriMod = require("satori") as { default?: typeof import("satori").default } & typeof import("satori").default;
-const satori = (satoriMod.default ?? satoriMod) as typeof import("satori").default;
+async function loadSatori(): Promise<typeof import("satori").default> {
+  // Dynamic import so Nitro inlines satori into the serverless bundle.
+  const mod = await import("satori");
+  return (mod.default ?? mod) as typeof import("satori").default;
+}
+
+let wasmReady: Promise<void> | null = null;
+
+async function ensureResvgWasm() {
+  if (!wasmReady) {
+    wasmReady = (async () => {
+      const { join } = await import("node:path");
+      const candidates = [
+        join(process.cwd(), "public/resvg.wasm"),
+        join(process.cwd(), "node_modules/@resvg/resvg-wasm/index_bg.wasm"),
+      ];
+      try {
+        candidates.unshift(require.resolve("@resvg/resvg-wasm/index_bg.wasm"));
+      } catch {
+        /* package path unavailable after bundle */
+      }
+      let bytes: Buffer | ArrayBuffer | null = null;
+      for (const path of candidates) {
+        try {
+          bytes = await readFile(path);
+          break;
+        } catch {
+          /* try next */
+        }
+      }
+      if (!bytes) {
+        const res = await fetch("https://golfdoctordc.com/resvg.wasm");
+        if (!res.ok) throw new Error(`resvg.wasm HTTP ${res.status}`);
+        bytes = await res.arrayBuffer();
+      }
+      await initWasm(bytes);
+    })();
+  }
+  await wasmReady;
+}
 
 export type GiftCardImageInput = {
   amount: string;
@@ -61,26 +100,37 @@ async function readFileIfExists(path: string): Promise<Buffer | null> {
 }
 
 async function loadBinary(pathHints: string[], url: string): Promise<ArrayBuffer> {
+  // Prefer HTTP on Vercel — public/ is on the CDN, not the function filesystem.
+  try {
+    const res = await fetch(url);
+    if (res.ok) return res.arrayBuffer();
+  } catch {
+    /* fall through to local files (dev) */
+  }
   const { join } = await import("node:path");
   for (const hint of pathHints) {
     const buf = await readFileIfExists(join(process.cwd(), hint));
     if (buf) return toArrayBuffer(buf);
   }
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Could not load ${url}`);
-  return res.arrayBuffer();
+  throw new Error(`Could not load ${url}`);
 }
 
 async function loadBackgroundDataUrl(): Promise<string> {
+  try {
+    const res = await fetch(`${SITE_ORIGIN}/images/gift-card.jpg`);
+    if (res.ok) {
+      const buf = Buffer.from(await res.arrayBuffer());
+      return `data:image/jpeg;base64,${buf.toString("base64")}`;
+    }
+  } catch {
+    /* local fallback for offline/dev */
+  }
   const { join } = await import("node:path");
   const local = await readFileIfExists(
     join(process.cwd(), "public/images/gift-card.jpg"),
   );
   if (local) return `data:image/jpeg;base64,${local.toString("base64")}`;
-  const res = await fetch(`${SITE_ORIGIN}/images/gift-card.jpg`);
-  if (!res.ok) throw new Error("Could not load gift-card.jpg");
-  const buf = Buffer.from(await res.arrayBuffer());
-  return `data:image/jpeg;base64,${buf.toString("base64")}`;
+  throw new Error("Could not load gift-card.jpg");
 }
 
 async function loadFont(fileName: string): Promise<ArrayBuffer> {
@@ -388,7 +438,8 @@ function cardMarkup(input: GiftCardImageInput, backgroundDataUrl: string) {
 export async function renderGiftCardPng(
   input: GiftCardImageInput,
 ): Promise<Buffer> {
-  const loaded = await assets();
+  const [loaded, satori] = await Promise.all([assets(), loadSatori()]);
+  await ensureResvgWasm();
   const svg = await satori(cardMarkup(input, loaded.backgroundDataUrl) as never, {
     width: WIDTH,
     height: HEIGHT,
