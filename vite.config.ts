@@ -145,6 +145,43 @@ function authPopupPlugin(): Plugin {
 // `0.0.0.0:8080` is the live-preview contract — don't change host/port.
 // The dev server starts once `src/router.tsx` and `src/routes/` exist — see
 // AGENTS.md § "First scaffold".
+
+/** Satori ships harfbuzz that references free `__dirname` (CJS). Nitro inlines
+ *  it as ESM for Vercel, so inject a module-scoped `__dirname` into that chunk.
+ *  Imports must stay contiguous at the top of an ES module.
+ */
+function satoriDirnameShim(): Plugin {
+  return {
+    name: "gddc:satori-dirname-shim",
+    renderChunk(code, chunk) {
+      if (!chunk.fileName.includes("satori")) return null;
+      if (!code.includes("__dirname")) return null;
+      if (
+        code.includes("const __dirname =") ||
+        code.includes("var __dirname =")
+      ) {
+        return null;
+      }
+      const extraImports =
+        'import { fileURLToPath as __gddcFu } from "node:url";\n' +
+        'import { dirname as __gddcDn } from "node:path";\n';
+      const dirnameLine =
+        "const __dirname = __gddcDn(__gddcFu(import.meta.url));";
+      const withImports = extraImports + code;
+      const lines = withImports.split("\n");
+      let lastImport = -1;
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].trim().startsWith("import ")) lastImport = i;
+      }
+      if (lastImport < 0) {
+        return { code: `${dirnameLine}\n${withImports}`, map: null };
+      }
+      lines.splice(lastImport + 1, 0, dirnameLine);
+      return { code: lines.join("\n"), map: null };
+    },
+  };
+}
+
 export default defineConfig(({ command, isPreview }) => ({
   server: {
     host: "0.0.0.0",
@@ -175,10 +212,12 @@ export default defineConfig(({ command, isPreview }) => ({
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.
             serverDir: "./server",
-            // Bundle satori into the serverless function (createRequire alone
-            // does not get traced into .vercel node_modules).
+            // Bundle satori + resvg-wasm into the serverless function.
             externals: {
               inline: ["satori", "@resvg/resvg-wasm"],
+            },
+            rollupConfig: {
+              plugins: [satoriDirnameShim()],
             },
           }),
         ]
