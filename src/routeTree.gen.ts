@@ -15,14 +15,17 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as ClubMakingRouteImport } from './routes/club-making'
 import { Route as FittingRouteImport } from './routes/fitting'
+import { Route as GiftCardThanksRouteImport } from './routes/gift-card-thanks'
 import { Route as GiftCardsRouteImport } from './routes/gift-cards'
 import { Route as LocationRouteImport } from './routes/location'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as TradeInRouteImport } from './routes/trade-in'
 import { Route as ApiPaypalIpnRouteImport } from './routes/api/paypal-ipn'
+import { Route as ApiStripeGiftWebhookRouteImport } from './routes/api/stripe-gift-webhook'
 import { Route as GiftCardsIndexRouteImport } from './routes/gift-cards.index'
 import { Route as GiftCardsCodeRouteImport } from './routes/gift-cards.$code'
+import { Route as GiftCardsChar123codeChar125DotpngRouteImport } from './routes/gift-cards_.{$code}[.]png'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +55,11 @@ const ClubMakingRoute = ClubMakingRouteImport.update({
 const FittingRoute = FittingRouteImport.update({
   id: '/fitting',
   path: '/fitting',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GiftCardThanksRoute = GiftCardThanksRouteImport.update({
+  id: '/gift-card-thanks',
+  path: '/gift-card-thanks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GiftCardsRoute = GiftCardsRouteImport.update({
@@ -84,6 +92,11 @@ const ApiPaypalIpnRoute = ApiPaypalIpnRouteImport.update({
   path: '/api/paypal-ipn',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStripeGiftWebhookRoute = ApiStripeGiftWebhookRouteImport.update({
+  id: '/api/stripe-gift-webhook',
+  path: '/api/stripe-gift-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GiftCardsIndexRoute = GiftCardsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -94,6 +107,12 @@ const GiftCardsCodeRoute = GiftCardsCodeRouteImport.update({
   path: '/$code',
   getParentRoute: () => GiftCardsRoute,
 } as any)
+const GiftCardsChar123codeChar125DotpngRoute =
+  GiftCardsChar123codeChar125DotpngRouteImport.update({
+    id: '/gift-cards_/{$code}.png',
+    path: '/gift-cards/{$code}.png',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -102,13 +121,16 @@ export interface FileRoutesByFullPath {
   '/book': typeof BookRoute
   '/club-making': typeof ClubMakingRoute
   '/fitting': typeof FittingRoute
+  '/gift-card-thanks': typeof GiftCardThanksRoute
   '/gift-cards': typeof GiftCardsRouteWithChildren
   '/location': typeof LocationRoute
   '/partners': typeof PartnersRoute
   '/studio': typeof StudioRoute
   '/trade-in': typeof TradeInRoute
   '/api/paypal-ipn': typeof ApiPaypalIpnRoute
+  '/api/stripe-gift-webhook': typeof ApiStripeGiftWebhookRoute
   '/gift-cards/$code': typeof GiftCardsCodeRoute
+  '/gift-cards/{$code}.png': typeof GiftCardsChar123codeChar125DotpngRoute
   '/gift-cards/': typeof GiftCardsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -118,12 +140,15 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/club-making': typeof ClubMakingRoute
   '/fitting': typeof FittingRoute
+  '/gift-card-thanks': typeof GiftCardThanksRoute
   '/location': typeof LocationRoute
   '/partners': typeof PartnersRoute
   '/studio': typeof StudioRoute
   '/trade-in': typeof TradeInRoute
   '/api/paypal-ipn': typeof ApiPaypalIpnRoute
+  '/api/stripe-gift-webhook': typeof ApiStripeGiftWebhookRoute
   '/gift-cards/$code': typeof GiftCardsCodeRoute
+  '/gift-cards/{$code}.png': typeof GiftCardsChar123codeChar125DotpngRoute
   '/gift-cards': typeof GiftCardsIndexRoute
 }
 export interface FileRoutesById {
@@ -134,13 +159,16 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/club-making': typeof ClubMakingRoute
   '/fitting': typeof FittingRoute
+  '/gift-card-thanks': typeof GiftCardThanksRoute
   '/gift-cards': typeof GiftCardsRouteWithChildren
   '/location': typeof LocationRoute
   '/partners': typeof PartnersRoute
   '/studio': typeof StudioRoute
   '/trade-in': typeof TradeInRoute
   '/api/paypal-ipn': typeof ApiPaypalIpnRoute
+  '/api/stripe-gift-webhook': typeof ApiStripeGiftWebhookRoute
   '/gift-cards/$code': typeof GiftCardsCodeRoute
+  '/gift-cards_/{$code}.png': typeof GiftCardsChar123codeChar125DotpngRoute
   '/gift-cards/': typeof GiftCardsIndexRoute
 }
 export interface FileRouteTypes {
@@ -152,13 +180,16 @@ export interface FileRouteTypes {
     | '/book'
     | '/club-making'
     | '/fitting'
+    | '/gift-card-thanks'
     | '/gift-cards'
     | '/location'
     | '/partners'
     | '/studio'
     | '/trade-in'
     | '/api/paypal-ipn'
+    | '/api/stripe-gift-webhook'
     | '/gift-cards/$code'
+    | '/gift-cards/{$code}.png'
     | '/gift-cards/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -168,12 +199,15 @@ export interface FileRouteTypes {
     | '/book'
     | '/club-making'
     | '/fitting'
+    | '/gift-card-thanks'
     | '/location'
     | '/partners'
     | '/studio'
     | '/trade-in'
     | '/api/paypal-ipn'
+    | '/api/stripe-gift-webhook'
     | '/gift-cards/$code'
+    | '/gift-cards/{$code}.png'
     | '/gift-cards'
   id:
     | '__root__'
@@ -183,13 +217,16 @@ export interface FileRouteTypes {
     | '/book'
     | '/club-making'
     | '/fitting'
+    | '/gift-card-thanks'
     | '/gift-cards'
     | '/location'
     | '/partners'
     | '/studio'
     | '/trade-in'
     | '/api/paypal-ipn'
+    | '/api/stripe-gift-webhook'
     | '/gift-cards/$code'
+    | '/gift-cards_/{$code}.png'
     | '/gift-cards/'
   fileRoutesById: FileRoutesById
 }
@@ -200,12 +237,15 @@ export interface RootRouteChildren {
   BookRoute: typeof BookRoute
   ClubMakingRoute: typeof ClubMakingRoute
   FittingRoute: typeof FittingRoute
+  GiftCardThanksRoute: typeof GiftCardThanksRoute
   GiftCardsRoute: typeof GiftCardsRouteWithChildren
   LocationRoute: typeof LocationRoute
   PartnersRoute: typeof PartnersRoute
   StudioRoute: typeof StudioRoute
   TradeInRoute: typeof TradeInRoute
   ApiPaypalIpnRoute: typeof ApiPaypalIpnRoute
+  ApiStripeGiftWebhookRoute: typeof ApiStripeGiftWebhookRoute
+  GiftCardsChar123codeChar125DotpngRoute: typeof GiftCardsChar123codeChar125DotpngRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +292,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FittingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/gift-card-thanks': {
+      id: '/gift-card-thanks'
+      path: '/gift-card-thanks'
+      fullPath: '/gift-card-thanks'
+      preLoaderRoute: typeof GiftCardThanksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gift-cards': {
       id: '/gift-cards'
       path: '/gift-cards'
@@ -294,6 +341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPaypalIpnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/stripe-gift-webhook': {
+      id: '/api/stripe-gift-webhook'
+      path: '/api/stripe-gift-webhook'
+      fullPath: '/api/stripe-gift-webhook'
+      preLoaderRoute: typeof ApiStripeGiftWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gift-cards/': {
       id: '/gift-cards/'
       path: '/'
@@ -307,6 +361,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/gift-cards/$code'
       preLoaderRoute: typeof GiftCardsCodeRouteImport
       parentRoute: typeof GiftCardsRoute
+    }
+    '/gift-cards_/{$code}.png': {
+      id: '/gift-cards_/{$code}.png'
+      path: '/gift-cards/{$code}.png'
+      fullPath: '/gift-cards/{$code}.png'
+      preLoaderRoute: typeof GiftCardsChar123codeChar125DotpngRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -332,12 +393,16 @@ const rootRouteChildren: RootRouteChildren = {
   BookRoute: BookRoute,
   ClubMakingRoute: ClubMakingRoute,
   FittingRoute: FittingRoute,
+  GiftCardThanksRoute: GiftCardThanksRoute,
   GiftCardsRoute: GiftCardsRouteWithChildren,
   LocationRoute: LocationRoute,
   PartnersRoute: PartnersRoute,
   StudioRoute: StudioRoute,
   TradeInRoute: TradeInRoute,
   ApiPaypalIpnRoute: ApiPaypalIpnRoute,
+  ApiStripeGiftWebhookRoute: ApiStripeGiftWebhookRoute,
+  GiftCardsChar123codeChar125DotpngRoute:
+    GiftCardsChar123codeChar125DotpngRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
