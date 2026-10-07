@@ -181,17 +181,22 @@ export async function issueAndDeliver(input: GiftOrderMail) {
     emailError = err instanceof Error ? err.message : "Email did not send";
   }
 
-  const noticeId = `gn_${randomToken(9)}`;
   const status = emailed ? "sent" : "recorded";
-  if (!existingNotice[0]) {
+  const body = emailed ? studioBody : `${studioBody}\n\nEmail error: ${emailError}`;
+  if (existingNotice[0]) {
+    await sql`
+      update gift_card_notices
+      set status = ${status}, body = ${body}, to_email = ${deliverTo || STUDIO}
+      where gift_card_id = ${card.id}
+    `;
+  } else {
     await sql`
       insert into gift_card_notices (
         id, gift_card_id, paypal_txn_id, to_email, subject, body, status
       ) values (
-        ${noticeId}, ${card.id}, ${stripeId || card.id}, ${deliverTo || STUDIO},
-        ${`Gift card issued ${amount} ${card.code}`},
-        ${emailed ? studioBody : `${studioBody}\n\nEmail error: ${emailError}`},
-        ${status}
+        ${`gn_${randomToken(9)}`}, ${card.id}, ${stripeId || card.id},
+        ${deliverTo || STUDIO}, ${`Gift card issued ${amount} ${card.code}`},
+        ${body}, ${status}
       )
     `;
   }
